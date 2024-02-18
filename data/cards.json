@@ -1,0 +1,44 @@
+[
+  {
+    "id": "1",
+    "category": "SECOND",
+    "question": "What is pair programming?",
+    "answer": "A practice to work in pair on the same computer.",
+    "tag": "Teamwork"
+  },
+  {
+    "id": "2",
+    "category": "FIRST",
+    "question": "What is RESTful API?",
+    "answer": "An architectural style for distributed hypermedia systems.",
+    "tag": "API"
+  },
+  {
+    "id": "3",
+    "category": "FIRST",
+    "question": "What is pair programming ?",
+    "answer": "A practice to work in pair on same computer.",
+    "tag": "Teamwork"
+  },
+  {
+    "id": "4",
+    "category": "FIRST",
+    "question": "What is Scrum ?",
+    "answer": "A practice to work in pair on same computer.",
+    "tag": "Teamwork"
+  },
+  {
+    "id": "5",
+    "category": "FIRST",
+    "question": "What is Kanban ?",
+    "answer": "A practice to work in pair on same computer.",
+    "tag": "Teamwork"
+  },
+  {
+    "question": "What is continuous integration?",
+    "answer": "A practice to work in pair on same computer.",
+    "tag": "Teamwork",
+    "category": "FIRST",
+    "id": "cb4d681a-61dc-45fa-98a9-b65e02f9ac66"
+  }
+]
