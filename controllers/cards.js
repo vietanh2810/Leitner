@@ -4,10 +4,12 @@ import {
     getCardByTags,
     createCard,
     updateCard,
-    // deleteCard,
     getCardByCategory,
-    
 } from "../models/Card.js";
+import {
+    checkIfDayIsAlreadyTaken,
+    markDayAsTaken
+} from "../models/QuizTakenDay.js";
 import { v4 as uuidv4 } from 'uuid';
 
 const START_DATE = new Date();
@@ -30,12 +32,15 @@ const getCardsController = async (req, res) => {
 const createCardController = async (req, res) => {
     try {
         let newCard = req.body;
+        if (!newCard.question || !newCard.answer || newCard.question === "" || newCard.answer === "" || newCard.tag === "" || !newCard.tag) {
+            return res.status(400).json({ error: "Missing propeties in sent card" });
+        }
         const id = uuidv4();
         newCard = { ...newCard, category: "FIRST", id: id };
         const card = await createCard(newCard);
-        return res.status(200).json(card);
+        return res.status(201).json(card);
     } catch (error) {
-        return res.status(500).json({ error: error.message });
+        return res.status(400).json({ error: error.message });
     }
 }
 
@@ -48,8 +53,12 @@ const getQuizzController = async (req, res) => {
         } else {
             nbOfDaySinceStart = getDayInCycle();
         }
+        if (checkIfDayIsAlreadyTaken(nbOfDaySinceStart)) {
+            return res.status(400).json({ error: "Quiz already taken today" });
+        } else {
+            markDayAsTaken(nbOfDaySinceStart);
+        }
         let quizz = [];
-        console.log(nbOfDaySinceStart);d
         quizz = await generateQuiz(nbOfDaySinceStart, quizz);
         return res.status(200).json(quizz);
     } catch (error) {
@@ -64,16 +73,14 @@ const submitAnswer = async (req, res) => {
         if (!card) {
             return res.status(404).json({ error: "Card not found" });
         }
-        console.log(req.body);
         const { isValid } = req.body;
-        //check if isValid is present
         if (isValid === undefined) {
             return res.status(400).json({ error: "IsValid parameter is required" });
         }
         await updateCardCategory(id, isValid);
-        
+        return res.status(204).json({ message: "Card updated" });
     } catch (error) {
-        return res.status(500).json({ error: error.message });
+        return res.status(400).json({ error: error.message });
     }
 }
 

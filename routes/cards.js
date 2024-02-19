@@ -8,10 +8,10 @@ import {
 } from '../controllers/cards.js';
 
 
-/* GET users listing. */
-cardsRouter.get('/cards', function (req, res, next) {
-    res.send('respond with a resource');
-});
+// /* GET users listing. */
+// cardsRouter.get('/cards', function (req, res, next) {
+//     res.send('respond with a resource');
+// });
 
 cardsRouter.get(
     "/",
