@@ -27,6 +27,11 @@ const getCardByTags = (tags) => {
     return cards.filter((card) => tags.includes(card.tag));
 }
 
+const getCardByDate = (date) => {
+    const cards = readCardsFromFile();
+    return cards.filter((card) => card.hasOwnProperty('date') && card.date === date);
+};
+
 const getCardByCategory = (category) => {
     const cards = readCardsFromFile();
     return cards.filter((card) => card.category === category);
@@ -59,5 +64,6 @@ export {
     updateCard,
     deleteCard,
     getCardByTags,
-    getCardByCategory
+    getCardByCategory,
+    getCardByDate
 };

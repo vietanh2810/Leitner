@@ -5,6 +5,7 @@ import {
     createCard,
     updateCard,
     getCardByCategory,
+    getCardByDate
 } from "../models/Card.js";
 import {
     checkIfDayIsAlreadyTaken,
@@ -36,7 +37,7 @@ const createCardController = async (req, res) => {
             return res.status(400).json({ error: "Missing propeties in sent card" });
         }
         const id = uuidv4();
-        newCard = { ...newCard, category: "FIRST", id: id };
+        newCard = { ...newCard, category: "FIRST", id: id}; //format date: 
         const card = await createCard(newCard);
         return res.status(201).json(card);
     } catch (error) {
@@ -59,7 +60,8 @@ const getQuizzController = async (req, res) => {
             markDayAsTaken(nbOfDaySinceStart);
         }
         let quizz = [];
-        quizz = await generateQuiz(nbOfDaySinceStart, quizz);
+        // quizz = await generateQuiz(nbOfDaySinceStart, quizz);
+        quizz = await generateQuizzByDate(dateParam, quizz);
         return res.status(200).json(quizz);
     } catch (error) {
         return res.status(500).json({ error: error.message });
@@ -90,9 +92,10 @@ const updateCardCategory = async (id,idValid) => {
     let cardToUpdate;
     if (idValid) {
         const nextCategory = getNextCategory(card.category);
-        cardToUpdate = { ...card, category: nextCategory };
+        let nextDate = getNextDateForQuestion(nextCategory);
+        cardToUpdate = { ...card, category: nextCategory, date: nextDate};
     } else {
-        cardToUpdate = { ...card, category: "FIRST" };
+        cardToUpdate = { ...card, category: "FIRST", date: null };
     }
     updateCard(cardToUpdate);
 }
@@ -133,26 +136,62 @@ const getDayInCycle = (date) => {
     return Math.floor(diff / (1000 * 60 * 60 * 24));
 }
 
-async function generateQuiz(nbOfDaySinceStart,quizz) {
-
-    const categoryConditions = [
-        { category: "FIRST", condition: true },
-        { category: "SECOND", condition: nbOfDaySinceStart % 2 === 0 },
-        { category: "THIRD", condition: nbOfDaySinceStart % 3 === 0 },
-        { category: "FOURTH", condition: nbOfDaySinceStart % 4 === 0 },
-        { category: "FIFTH", condition: nbOfDaySinceStart % 5 === 0 },
-        { category: "SIXTH", condition: nbOfDaySinceStart % 6 === 0 },
-        { category: "SEVENTH", condition: nbOfDaySinceStart % 7 === 0 }
-    ];
-
-    for (const { category, condition } of categoryConditions) {
-        if (condition) {
-            const categoryCards = await getCardByCategory(category);
-            quizz = quizz.concat(categoryCards);
-        }
+const getNextDateForQuestion = (category) => {
+    let today = new Date();
+    switch (category) {
+        case "SECOND":
+            return toFormattedDateString(today.setDate(today.getDate() + 2));
+        case "THIRD":
+            return toFormattedDateString(today.setDate(today.getDate() + 4));
+        case "FOURTH":
+            return toFormattedDateString(today.setDate(today.getDate() + 8));
+        case "FIFTH":
+            return toFormattedDateString(today.setDate(today.getDate() + 16));
+        case "SIXTH":
+            return toFormattedDateString(today.setDate(today.getDate() + 32));
+        case "SEVENTH":
+            return toFormattedDateString(today.setDate(today.getDate() + 64));
+        default:
+            return null;
     }
+}
 
+// async function generateQuiz(nbOfDaySinceStart,quizz) { //legacy when applied calendar logic
+
+//     const categoryConditions = [
+//         { category: "FIRST", condition: true },
+//         { category: "SECOND", condition: nbOfDaySinceStart % 2 === 0 },
+//         { category: "THIRD", condition: nbOfDaySinceStart % 3 === 0 },
+//         { category: "FOURTH", condition: nbOfDaySinceStart % 4 === 0 },
+//         { category: "FIFTH", condition: nbOfDaySinceStart % 5 === 0 },
+//         { category: "SIXTH", condition: nbOfDaySinceStart % 6 === 0 },
+//         { category: "SEVENTH", condition: nbOfDaySinceStart % 7 === 0 }
+//     ];
+
+//     for (const { category, condition } of categoryConditions) {
+//         if (condition) {
+//             const categoryCards = await getCardByCategory(category);
+//             quizz = quizz.concat(categoryCards);
+//         }
+//     }
+
+//     return quizz;
+// } 
+
+async function generateQuizzByDate(dateString,quizz) {
+    let firstCategoryQuestions = await getCardByCategory("FIRST");
+    quizz = quizz.concat(firstCategoryQuestions);
+    let cardByDate = await getCardByDate(dateString);
+    quizz = quizz.concat(cardByDate);
     return quizz;
+}
+
+function toFormattedDateString(date) { // date here is a Date object
+    let year = date.getFullYear();
+    let month = (date.getMonth() + 1).toString().padStart(2, '0'); // getMonth() is zero-indexed
+    let day = date.getDate().toString().padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
 }
 
 export {
