@@ -40,18 +40,44 @@ const getCardsController = async (req, res) => {
 };
 
 const createCardController = async (req, res) => {
+
     try {
-        let newCard = req.body;
-        if (!newCard.question || !newCard.answer || newCard.question === "" || newCard.answer === "" || newCard.tag === "" || !newCard.tag) {
-            return res.status(400).json({ error: "Missing propeties in sent card" });
+        // Extraire les données de la carte du corps de la requête
+        const { question, answer, tag } = req.body;
+
+        // Valider les données de la carte
+        if (!question || !answer || !tag || question.trim() === "" || answer.trim() === "" || tag.trim() === "") {
+            return res.status(400).json({ error: "Missing or invalid properties in sent card" });
         }
+
+        // Générer un nouvel ID pour la carte
         const id = uuidv4();
-        newCard = { ...newCard, category: "FIRST", id: id };
+
+        // Créer la nouvelle carte avec la catégorie "FIRST" et l'ID généré
+        const newCard = { id, question, answer, tag, category: "FIRST" };
+
+        // Créer la carte dans la base de données
         const card = await createCard(newCard);
+
+        // Répondre avec la carte créée et un code 201 (Created)
         return res.status(201).json(card);
     } catch (error) {
-        return res.status(400).json({ error: error.message });
+        // Gérer les erreurs et renvoyer une réponse appropriée
+        return res.status(500).json({ error: error.message });
     }
+
+    // try {
+    //     let newCard = req.body;
+    //     if (!newCard.question || !newCard.answer || newCard.question === "" || newCard.answer === "" || newCard.tag === "" || !newCard.tag) {
+    //         return res.status(400).json({ error: "Missing propeties in sent card" });
+    //     }
+    //     const id = uuidv4();
+    //     newCard = { ...newCard, category: "FIRST", id: id };
+    //     const card = await createCard(newCard);
+    //     return res.status(201).json(card);
+    // } catch (error) {
+    //     return res.status(400).json({ error: error.message });
+    // }
 }
 
 const getQuizzController = async (req, res) => {
@@ -78,20 +104,49 @@ const getQuizzController = async (req, res) => {
 
 const submitAnswer = async (req, res) => {
     try {
+        // Extraire id et isValid de la requête
         const { id } = req.params;
+        const { isValid } = req.body;
+
+        // Valider la présence des données nécessaires
+        if (!id) {
+            return res.status(400).json({ error: "ID parameter is required" });
+        }
+        if (isValid === undefined) {
+            return res.status(400).json({ error: "isValid parameter is required" });
+        }
+
+        // Rechercher la carte correspondante
         const card = await getCardById(id);
         if (!card) {
             return res.status(404).json({ error: "Card not found" });
         }
-        const { isValid } = req.body;
-        if (isValid === undefined) {
-            return res.status(400).json({ error: "IsValid parameter is required" });
-        }
+
+        // Mettre à jour la catégorie de la carte
         await updateCardCategory(id, isValid);
-        return res.status(204).json({ message: "Card updated" });
+
+        // Répondre avec un code 204 pour indiquer que la carte a été mise à jour avec succès
+        return res.status(204).send();
     } catch (error) {
-        return res.status(400).json({ error: error.message });
+        // Gérer les erreurs et renvoyer une réponse appropriée
+        return res.status(500).json({ error: error.message });
     }
+
+    // try {
+    //     const { id } = req.params;
+    //     const card = await getCardById(id);
+    //     if (!card) {
+    //         return res.status(404).json({ error: "Card not found" });
+    //     }
+    //     const { isValid } = req.body;
+    //     if (isValid === undefined) {
+    //         return res.status(400).json({ error: "IsValid parameter is required" });
+    //     }
+    //     await updateCardCategory(id, isValid);
+    //     return res.status(204).json({ message: "Card updated" });
+    // } catch (error) {
+    //     return res.status(400).json({ error: error.message });
+    // }
 }
 
 const updateCardCategory = async (id,idValid) => {
