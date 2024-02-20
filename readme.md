@@ -1,7 +1,7 @@
 # Back de l'application
 
 ## Pour lancer le back de l'application
-1. `npm i`
+1. `npm install`
 2. `npm start`
 
 ## Schéma architecture hexagonale et DDD de l'application
