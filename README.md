@@ -28,3 +28,10 @@ So if u want to re-retrieve the quiz for today: simply remove 0 from the array i
 
 ## Functionality we've done:
 All the basic + bonus 1
+
+## For Bonus 1:
+How we've done it:
+Instead of using the calendar base:
+![](https://cdn.discordapp.com/attachments/1208186930332967046/1209320175707357184/image.png?ex=65e67e2d&is=65d4092d&hm=b36928b7006d6bb38d436cb4592405432433cbb2768aa3ca2ad1258c7db776ed&=)
+We added a notion of nextDate in each Card which represents the next day the card will be in the quiz: the property will only be added when user submits an answer for the card. The when generate the quizz for a day we simply added all the card in 1st category and then all the card whose nextDate = current day.
+![](https://cdn.discordapp.com/attachments/1208186930332967046/1209320854459129977/image.png?ex=65e67ecf&is=65d409cf&hm=088543307d221e049348fa29467cc631d11764d71755af2322b31f51e7a0d8c1&=)
