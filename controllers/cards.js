@@ -138,11 +138,11 @@ async function generateQuiz(nbOfDaySinceStart,quizz) {
     const categoryConditions = [
         { category: "FIRST", condition: true },
         { category: "SECOND", condition: nbOfDaySinceStart % 2 === 0 },
-        { category: "THIRD", condition: nbOfDaySinceStart % 3 === 0 },
-        { category: "FOURTH", condition: nbOfDaySinceStart % 4 === 0 },
-        { category: "FIFTH", condition: nbOfDaySinceStart % 5 === 0 },
-        { category: "SIXTH", condition: nbOfDaySinceStart % 6 === 0 },
-        { category: "SEVENTH", condition: nbOfDaySinceStart % 7 === 0 }
+        { category: "THIRD", condition: nbOfDaySinceStart % 4 === 0 },
+        { category: "FOURTH", condition: nbOfDaySinceStart % 8 === 0 },
+        { category: "FIFTH", condition: nbOfDaySinceStart % 16 === 0 },
+        { category: "SIXTH", condition: nbOfDaySinceStart % 32 === 0 },
+        { category: "SEVENTH", condition: nbOfDaySinceStart % 64 === 0 }
     ];
 
     for (const { category, condition } of categoryConditions) {
