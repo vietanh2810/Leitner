@@ -5,11 +5,11 @@ import {
     createCard,
     updateCard,
     getCardByCategory,
-} from "../models/Card.js";
+} from "../fakeOdm/Card.js";
 import {
     checkIfDayIsAlreadyTaken,
     markDayAsTaken
-} from "../models/QuizTakenDay.js";
+} from "../fakeOdm/QuizTakenDay.js";
 import { v4 as uuidv4 } from 'uuid';
 
 const START_DATE = new Date();
