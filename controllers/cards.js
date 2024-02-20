@@ -65,19 +65,6 @@ const createCardController = async (req, res) => {
         // Gérer les erreurs et renvoyer une réponse appropriée
         return res.status(500).json({ error: error.message });
     }
-
-    // try {
-    //     let newCard = req.body;
-    //     if (!newCard.question || !newCard.answer || newCard.question === "" || newCard.answer === "" || newCard.tag === "" || !newCard.tag) {
-    //         return res.status(400).json({ error: "Missing propeties in sent card" });
-    //     }
-    //     const id = uuidv4();
-    //     newCard = { ...newCard, category: "FIRST", id: id };
-    //     const card = await createCard(newCard);
-    //     return res.status(201).json(card);
-    // } catch (error) {
-    //     return res.status(400).json({ error: error.message });
-    // }
 }
 
 const getQuizzController = async (req, res) => {
@@ -131,22 +118,6 @@ const submitAnswer = async (req, res) => {
         // Gérer les erreurs et renvoyer une réponse appropriée
         return res.status(500).json({ error: error.message });
     }
-
-    // try {
-    //     const { id } = req.params;
-    //     const card = await getCardById(id);
-    //     if (!card) {
-    //         return res.status(404).json({ error: "Card not found" });
-    //     }
-    //     const { isValid } = req.body;
-    //     if (isValid === undefined) {
-    //         return res.status(400).json({ error: "IsValid parameter is required" });
-    //     }
-    //     await updateCardCategory(id, isValid);
-    //     return res.status(204).json({ message: "Card updated" });
-    // } catch (error) {
-    //     return res.status(400).json({ error: error.message });
-    // }
 }
 
 const updateCardCategory = async (id,idValid) => {
