@@ -12,6 +12,16 @@ import {
 } from "../fakeOdm/QuizTakenDay.js";
 import { v4 as uuidv4 } from 'uuid';
 
+const categorySuccessors = {
+    FIRST: "SECOND",
+    SECOND: "THIRD",
+    THIRD: "FOURTH",
+    FOURTH: "FIFTH",
+    FIFTH: "SIXTH",
+    SIXTH: "SEVENTH",
+    SEVENTH: "DONE"
+  };
+
 const START_DATE = new Date();
 
 const getCardsController = async (req, res) => {
@@ -97,61 +107,49 @@ const updateCardCategory = async (id,idValid) => {
     updateCard(cardToUpdate);
 }
 
+/**
+ * 
+ * @param category 
+ * @returns next category
+ */
 const getNextCategory = (category) => {
-    if ( category === "FIRST") {
-        return "SECOND";
-    }
-    if ( category === "SECOND") {
-        return "THIRD";
-    }
-    if ( category === "THIRD") {
-        return "FOURTH";
-    }
-    if ( category === "FOURTH") {
-        return "FIFTH";
-    }
-    if ( category === "FIFTH") {
-        return "SIXTH";
-    }
-    if ( category === "SIXTH") {
-        return "SEVENTH";
-    }
-    if ( category === "SEVENTH") {
-        return "DONE";
-    }
+    return categorySuccessors[category] || null;
 }
 
+/**
+ * 
+ * @param  date 
+ * @returns La différence de jours en entier
+ */
 const getDayInCycle = (date) => {
-    let diff = 0;
-    if (date) {
-        const dateFormatted = new Date(date);
-        diff = dateFormatted - START_DATE;
-    } else {
-        const now = new Date();
-        diff = now - START_DATE;
-    }
-    return Math.floor(diff / (1000 * 60 * 60 * 24));
+    const startDate = new Date(START_DATE);
+    // Utiliser l'opérateur de coalescence nulle pour fournir une valeur par défaut si date est null ou undefined
+    const targetDate = date ? new Date(date) : new Date();
+    // Calculer la différence entre les dates en millisecondes
+    const diffInMilliseconds = targetDate.getTime() - startDate.getTime();
+    // Convertir la différence en jours et retourner le résultat arrondi à l'entier le plus proche
+    return Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
 }
 
+/**
+ * 
+ * @param nbOfDaySinceStart 
+ * @param quizz 
+ * @returns quizz
+ */
 async function generateQuiz(nbOfDaySinceStart,quizz) {
-
-    const categoryConditions = [
-        { category: "FIRST", condition: true },
-        { category: "SECOND", condition: nbOfDaySinceStart % 2 === 0 },
-        { category: "THIRD", condition: nbOfDaySinceStart % 4 === 0 },
-        { category: "FOURTH", condition: nbOfDaySinceStart % 8 === 0 },
-        { category: "FIFTH", condition: nbOfDaySinceStart % 16 === 0 },
-        { category: "SIXTH", condition: nbOfDaySinceStart % 32 === 0 },
-        { category: "SEVENTH", condition: nbOfDaySinceStart % 64 === 0 }
-    ];
-
-    for (const { category, condition } of categoryConditions) {
+    const categories = ["FIRST", "SECOND", "THIRD", "FOURTH", "FIFTH", "SIXTH", "SEVENTH"];
+    // Parcours de toutes les catégories
+    for (let i = 0; i < categories.length; i++) {
+        const category = categories[i];
+        // Calcul de la condition basée sur la puissance de 2
+        const condition = nbOfDaySinceStart % Math.pow(2, i) === 0;
+        // Si la condition est vraie, ajoute les cartes de la catégorie au quiz
         if (condition) {
             const categoryCards = await getCardByCategory(category);
             quizz = quizz.concat(categoryCards);
         }
     }
-
     return quizz;
 }
 
